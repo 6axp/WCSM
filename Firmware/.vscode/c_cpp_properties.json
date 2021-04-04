@@ -1,0 +1,37 @@
+{
+    "configurations": [
+        {
+            "name": "arm_c_cpp_properties",
+            "compilerPath": "${workspaceRoot}/../../Utilities/arm_gcc/bin/arm-none-eabi-gcc.exe",
+            "includePath": [
+                "${workspaceRoot}/../../Utilities/arm_gcc/arm-none-eabi/include",
+                "${workspaceRoot}/../../Utilities/arm_gcc/arm-none-eabi/include/sys/",
+                "${workspaceRoot}/../../Utilities/arm_gcc/arm-none-eabi/include/sys/**",
+                "${workspaceRoot}/../../Utilities/arm_gcc/lib/**",
+                "${workspaceRoot}/../../Utilities/arm_gcc/arm-none-eabi/include/**",
+                "${workspaceRoot}/../../Utilities/arm_gcc/arm-none-eabi/include/c++/6.3.1/**",
+
+                "${workspaceRoot}/../../Libraries/CMSIS/Core/Include",
+                "${workspaceRoot}/../../Libraries/CMSIS/Device/ST/STM32F0xx/Include",
+                "${workspaceRoot}/../../Libraries/**",
+                "${workspaceRoot}/"
+            ],
+            "defines": [
+                "STM32F030x6",
+                "M0",
+                "GCC_ARMCM0",
+                "__CC_ARM",
+                "__cplusplus",
+                "_GLIBCXX_USE_C99_CHECK",
+                "__force_stores()",
+                "__wfi()",
+                "__wfe()",
+                "__sev()"
+            ],
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-arm"
+        }
+    ],
+    "version": 4
+}

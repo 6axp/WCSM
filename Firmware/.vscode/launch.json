@@ -1,0 +1,36 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug",
+            "cwd": "${workspaceRoot}",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "executable": "${workspaceRoot}\\Build\\corelib_f030_test.elf",
+            "svdFile": "D:\\Projects\\STM32\\Utilities\\cmsis_svd\\cmsis-svd-master\\data\\STMicro\\STM32F030.svd",
+            "configFiles": [
+                "D:\\Projects\\STM32\\Utilities\\open_ocd\\scripts\\interface\\stlink-v2-1.cfg",
+                "D:\\Projects\\STM32\\Utilities\\open_ocd\\scripts\\target\\stm32f0x.cfg"
+            ]
+        },
+        {
+            "name": "Build & Debug",
+            "cwd": "${workspaceRoot}",
+            "preLaunchTask" : "Build & Flash",
+            "request": "launch",
+            "type": "cortex-debug",
+            //"swoConfig" : { "enabled": true },
+            "servertype": "openocd",
+            "executable": "${workspaceRoot}\\Build\\corelib_f030_test.elf",
+            "svdFile": "D:\\Projects\\STM32\\Utilities\\cmsis_svd\\cmsis-svd-master\\data\\STMicro\\STM32F030.svd",
+            "configFiles": [
+                "D:\\Projects\\STM32\\Utilities\\open_ocd\\scripts\\interface\\stlink-v2-1.cfg",
+                "D:\\Projects\\STM32\\Utilities\\open_ocd\\scripts\\target\\stm32f0x.cfg"
+            ]
+        }
+    ]
+}

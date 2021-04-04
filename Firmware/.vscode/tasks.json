@@ -1,0 +1,203 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start Powershell",
+            "type": "shell",
+            "command": "cmd /c start powershell.exe",
+            "group": "test",
+            "problemMatcher": []
+        },
+        {
+            "label": "Start Terminal",
+            "type": "shell",
+            "command": "${workspaceRoot}/../../Utilities/uart_terminal/Terminal.exe",
+            "group": "test",
+            "problemMatcher": []
+        },
+        {
+            "label": "Kill Terminal",
+            "type": "shell",
+            "command": "KillTerminal.bat",
+            "options": {
+                "cwd": "${workspaceRoot}/../../Utilities/uart_terminal",
+                "shell": {
+                    "executable": "cmd.exe",
+                    "args": [
+                        "/C"
+                    ]
+                }
+            }
+        },
+        {
+            "label": "Start TDD",
+            "type": "shell",
+            "command": "${workspaceRoot}/../../Utilities/usb_descriptor_dumper.exe",
+            "group": "test",
+            "problemMatcher": []
+        },
+        {
+            "label": "Clean",
+            "type": "shell",
+            "command": "make -s clean",
+            "options": {
+                "cwd": "${workspaceRoot}",
+                "shell": {
+                    "executable": "cmd.exe",
+                    "args": [
+                        "/C"
+                    ]
+                }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build & Flash",
+            "type": "shell",
+            "command": "make -s -j 10 all&&${workspaceRoot}/../../Utilities/st_link/ST-LINK_CLI.exe -c SWD -p Build/corelib_f030_test.bin 0x08000000 -v \"while_programming\" -rst",
+            "options": {
+                "cwd": "${workspaceRoot}",
+                "shell": {
+                    "executable": "cmd.exe",
+                    "args": [
+                        "/C"
+                    ]
+                }
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Write to MCU Flash",
+            "type": "shell",
+            "command": "ST-LINK_CLI.exe -c SWD -p Build/CoreLibrary.bin 0x08000000 -v \"while_programming\" -rst",
+            "options": {
+                "cwd": "${workspaceRoot}",
+                "shell": {
+                    "executable": "cmd.exe",
+                    "args": [
+                        "/C"
+                    ]
+                }
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Build",
+            "type": "shell",
+            "command": "make -s -j 10 all",
+            "options": {
+                "cwd": "${workspaceRoot}",
+                "shell": {
+                    "executable": "cmd.exe",
+                    "args": [
+                        "/C"
+                    ]
+                }
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Read Flash from MCU obsolete",
+            "type": "shell",
+            "command": "JLink.exe -Device STM32F334C8 -If SWD -Speed 1000 JLink\\ReadMCU.jlink",
+            "options": {
+                "cwd": "${workspaceRoot}",
+                "shell": {
+                    "executable": "cmd.exe",
+                    "args": [
+                        "/C"
+                    ]
+                }
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Erase Flash MCU obsolete",
+            "type": "shell",
+            "command": "JLink.exe -Device STM32F334C8 -If SWD -Speed 1000 JLink\\EraseMCU.jlink",
+            "options": {
+                "cwd": "${workspaceRoot}",
+                "shell": {
+                    "executable": "cmd.exe",
+                    "args": [
+                        "/C"
+                    ]
+                }
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Reset MCU obsolete",
+            "type": "shell",
+            "command": "JLink.exe -Device STM32F334C8 -If SWD -Speed 1000 JLink\\ResetMCU.jlink",
+            "options": {
+                "cwd": "${workspaceRoot}",
+                "shell": {
+                    "executable": "cmd.exe",
+                    "args": [
+                        "/C"
+                    ]
+                }
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Start GDB Server (Cortex-M4) obsolete",
+            "type": "shell",
+            "command": "start JLinkGDBServer.exe -select USB -device Cortex-M4 -if SWD -speed 1000 -ir",
+            "options": {
+                "cwd": "${workspaceRoot}",
+                "shell": {
+                    "executable": "cmd.exe",
+                    "args": [
+                        "/C"
+                    ]
+                }
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "arm-none-eabi-gcc.exe build active file",
+            "command": "${workspaceRoot}/../../Utilities/arm_gcc/bin/arm-none-eabi-gcc.exe",
+            "args": [
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/../../Utilities/arm_gcc/bin"
+            }
+        }
+    ]
+}
