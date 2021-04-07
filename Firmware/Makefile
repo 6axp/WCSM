@@ -37,11 +37,11 @@ BUILD_DIR = Build
 # C sources
 C_SOURCES =  \
 Src/main.c \
-../../Libraries/system_stm32f0xx.c \
+D:/Projects/STM32/Libraries/system_stm32f0xx.c \
 
 # ASM sources
 ASM_SOURCES =  \
-../../Libraries/VectorTables/startup_stm32f030x6.s
+D:/Projects/STM32/Libraries/VectorTables/startup_stm32f030x6.s
 
 #######################################
 # binaries
@@ -91,9 +91,9 @@ AS_INCLUDES =
 # C includes
 C_INCLUDES = \
 -IInc \
--I../../Libraries \
--I../../Libraries/CMSIS/Device/ST/STM32F0xx/Include \
--I../../Libraries/CMSIS/Include \
+-ID:/Projects/STM32/Libraries \
+-ID:/Projects/STM32/Libraries/CMSIS/Device/ST/STM32F0xx/Include \
+-ID:/Projects/STM32/Libraries/CMSIS/Include \
 -I. \
 
 # compile gcc flags
@@ -112,7 +112,7 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 # LDFLAGS
 #######################################
 # link script
-LDSCRIPT = ../../Libraries/LinkerScripts/STM32F030F4Px_FLASH.ld
+LDSCRIPT = D:/Projects/STM32/Libraries/LinkerScripts/STM32F030F4Px_FLASH.ld
 
 # libraries
 LIBS = -lc -lm -lnosys 

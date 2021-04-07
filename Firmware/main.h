@@ -1,8 +1,6 @@
-#define DEBUG_START() { usart1.configure(115200); }
-#define DEBUG_PRINT(m) { usart1.send(m); }
-#define DEBUG_PRINTLN(m) { usart1.send(m); usart1.send("\r\n"); }
+#pragma once
 
-#include "../../CoreLib/chips/stm32f030f4p6.h"
+#include "D:/Projects/STM32/Libraries/CoreLib/chips/stm32f030f4p6.h"
 
 // power.stop(pwr::regulator_mode::normal); // 0.19 mA
 // power.stop(pwr::regulator_mode::low_power); // 0.006 mA

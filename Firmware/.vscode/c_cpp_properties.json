@@ -2,19 +2,19 @@
     "configurations": [
         {
             "name": "arm_c_cpp_properties",
-            "compilerPath": "${workspaceRoot}/../../Utilities/arm_gcc/bin/arm-none-eabi-gcc.exe",
+            "compilerPath": "D:/Projects/STM32/Utilities/arm_gcc/bin/arm-none-eabi-gcc.exe",
             "includePath": [
-                "${workspaceRoot}/../../Utilities/arm_gcc/arm-none-eabi/include",
-                "${workspaceRoot}/../../Utilities/arm_gcc/arm-none-eabi/include/sys/",
-                "${workspaceRoot}/../../Utilities/arm_gcc/arm-none-eabi/include/sys/**",
-                "${workspaceRoot}/../../Utilities/arm_gcc/lib/**",
-                "${workspaceRoot}/../../Utilities/arm_gcc/arm-none-eabi/include/**",
-                "${workspaceRoot}/../../Utilities/arm_gcc/arm-none-eabi/include/c++/6.3.1/**",
+                "D:/Projects/STM32/Utilities/arm_gcc/arm-none-eabi/include",
+                "D:/Projects/STM32/Utilities/arm_gcc/arm-none-eabi/include/sys/",
+                "D:/Projects/STM32/Utilities/arm_gcc/arm-none-eabi/include/sys/**",
+                "D:/Projects/STM32/Utilities/arm_gcc/lib/**",
+                "D:/Projects/STM32/Utilities/arm_gcc/arm-none-eabi/include/**",
+                "D:/Projects/STM32/Utilities/arm_gcc/arm-none-eabi/include/c++/6.3.1/**",
 
-                "${workspaceRoot}/../../Libraries/CMSIS/Core/Include",
-                "${workspaceRoot}/../../Libraries/CMSIS/Device/ST/STM32F0xx/Include",
-                "${workspaceRoot}/../../Libraries/**",
-                "${workspaceRoot}/"
+                "D:/Projects/STM32/Libraries/CMSIS/Core/Include",
+                "D:/Projects/STM32/Libraries/CMSIS/Device/ST/STM32F0xx/Include",
+                "D:/Projects/STM32/Libraries/**",
+                "D:/Projects/STM32/"
             ],
             "defines": [
                 "STM32F030x6",

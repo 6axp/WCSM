@@ -11,7 +11,7 @@
         {
             "label": "Start Terminal",
             "type": "shell",
-            "command": "${workspaceRoot}/../../Utilities/uart_terminal/Terminal.exe",
+            "command": "D:/Projects/STM32/Utilities/uart_terminal/Terminal.exe",
             "group": "test",
             "problemMatcher": []
         },
@@ -20,7 +20,7 @@
             "type": "shell",
             "command": "KillTerminal.bat",
             "options": {
-                "cwd": "${workspaceRoot}/../../Utilities/uart_terminal",
+                "cwd": "D:/Projects/STM32/Utilities/uart_terminal",
                 "shell": {
                     "executable": "cmd.exe",
                     "args": [
@@ -28,13 +28,6 @@
                     ]
                 }
             }
-        },
-        {
-            "label": "Start TDD",
-            "type": "shell",
-            "command": "${workspaceRoot}/../../Utilities/usb_descriptor_dumper.exe",
-            "group": "test",
-            "problemMatcher": []
         },
         {
             "label": "Clean",
@@ -58,7 +51,7 @@
         {
             "label": "Build & Flash",
             "type": "shell",
-            "command": "make -s -j 10 all&&${workspaceRoot}/../../Utilities/st_link/ST-LINK_CLI.exe -c SWD -p Build/corelib_f030_test.bin 0x08000000 -v \"while_programming\" -rst",
+            "command": "make -s -j 10 all&&D:/Projects/STM32/Utilities/st_link/ST-LINK_CLI.exe -c SWD -p Build/corelib_f030_test.bin 0x08000000 -v \"while_programming\" -rst",
             "options": {
                 "cwd": "${workspaceRoot}",
                 "shell": {
@@ -70,24 +63,6 @@
             },
             "group": {
                 "kind": "build",
-                "isDefault": true
-            }
-        },
-        {
-            "label": "Write to MCU Flash",
-            "type": "shell",
-            "command": "ST-LINK_CLI.exe -c SWD -p Build/CoreLibrary.bin 0x08000000 -v \"while_programming\" -rst",
-            "options": {
-                "cwd": "${workspaceRoot}",
-                "shell": {
-                    "executable": "cmd.exe",
-                    "args": [
-                        "/C"
-                    ]
-                }
-            },
-            "group": {
-                "kind": "test",
                 "isDefault": true
             }
         },
@@ -107,96 +82,6 @@
             "group": {
                 "kind": "test",
                 "isDefault": true
-            }
-        },
-        {
-            "label": "Read Flash from MCU obsolete",
-            "type": "shell",
-            "command": "JLink.exe -Device STM32F334C8 -If SWD -Speed 1000 JLink\\ReadMCU.jlink",
-            "options": {
-                "cwd": "${workspaceRoot}",
-                "shell": {
-                    "executable": "cmd.exe",
-                    "args": [
-                        "/C"
-                    ]
-                }
-            },
-            "group": {
-                "kind": "test",
-                "isDefault": true
-            },
-            "problemMatcher": []
-        },
-        {
-            "label": "Erase Flash MCU obsolete",
-            "type": "shell",
-            "command": "JLink.exe -Device STM32F334C8 -If SWD -Speed 1000 JLink\\EraseMCU.jlink",
-            "options": {
-                "cwd": "${workspaceRoot}",
-                "shell": {
-                    "executable": "cmd.exe",
-                    "args": [
-                        "/C"
-                    ]
-                }
-            },
-            "group": {
-                "kind": "test",
-                "isDefault": true
-            },
-            "problemMatcher": []
-        },
-        {
-            "label": "Reset MCU obsolete",
-            "type": "shell",
-            "command": "JLink.exe -Device STM32F334C8 -If SWD -Speed 1000 JLink\\ResetMCU.jlink",
-            "options": {
-                "cwd": "${workspaceRoot}",
-                "shell": {
-                    "executable": "cmd.exe",
-                    "args": [
-                        "/C"
-                    ]
-                }
-            },
-            "group": {
-                "kind": "test",
-                "isDefault": true
-            },
-            "problemMatcher": []
-        },
-        {
-            "label": "Start GDB Server (Cortex-M4) obsolete",
-            "type": "shell",
-            "command": "start JLinkGDBServer.exe -select USB -device Cortex-M4 -if SWD -speed 1000 -ir",
-            "options": {
-                "cwd": "${workspaceRoot}",
-                "shell": {
-                    "executable": "cmd.exe",
-                    "args": [
-                        "/C"
-                    ]
-                }
-            },
-            "group": {
-                "kind": "test",
-                "isDefault": true
-            },
-            "problemMatcher": []
-        },
-        {
-            "type": "shell",
-            "label": "arm-none-eabi-gcc.exe build active file",
-            "command": "${workspaceRoot}/../../Utilities/arm_gcc/bin/arm-none-eabi-gcc.exe",
-            "args": [
-                "-g",
-                "${file}",
-                "-o",
-                "${fileDirname}\\${fileBasenameNoExtension}.exe"
-            ],
-            "options": {
-                "cwd": "${workspaceRoot}/../../Utilities/arm_gcc/bin"
             }
         }
     ]
