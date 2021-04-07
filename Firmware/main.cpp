@@ -29,17 +29,11 @@ void prepare_for_sleep()
 int main(void)
 {
 	//rcc::initialize();
-	led.configure(gpio::mode::output);
-	int tick_until_sleep = 10;
+	usart1.configure(8000000, 9600);
 	while (true)
 	{
-		delay(400000);
-		led.toggle();
-		if (tick_until_sleep-- <= 0)
-		{
-			prepare_for_sleep();
-			power.standby();
-		}
-			
+		usart1.send("Hello world!");
+		usart1.println();
+		delay(1000000);
 	}
 }
