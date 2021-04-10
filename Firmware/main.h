@@ -1,6 +1,7 @@
 #pragma once
 
 #include "D:/Projects/STM32/Libraries/CoreLib/chips/stm32f030f4p6.h"
+#include "D:/Projects/STM32/Libraries/Corelib/at250x0b.h"
 
 // power.stop(pwr::regulator_mode::normal); // 0.19 mA
 // power.stop(pwr::regulator_mode::low_power); // 0.006 mA
