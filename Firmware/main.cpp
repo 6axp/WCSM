@@ -46,19 +46,56 @@ void prepare_for_sleep()
 
 int main(void)
 {
+	delay(300000);
+	
 	modules_en.configure(gpio::mode::output);
 	modules_en.high();
 	usart1.configure(8000000, 115200);
-	battery.configure();
 
 	at250x0b eeprom(spi1, eeprom_cs, true, true);
 	usart1.send("-------");
 	usart1.println();
 	eeprom.print_to(usart1);
 
+	power.clock.enable();
+	power.sleep_after_interrupts(false);
+
+	modules_en.low();
+
+	battery.configure();
+
+	meter_in1.configure(gpio::mode::input_pull_up);
+	meter_in2.configure(gpio::mode::input_pull_up);
+	exti9.configure(interrupts::trigger::falling);
+	exti10.configure(interrupts::trigger::falling);
+	exti_4_to_15.enable();
+
 	while (true)
 	{
+		//usart1.configure(8000000, 115200);
+		//battery.configure();
 		usart1.sendln(battery.get_voltage(10));
-		delay(1000000);
+		power.stop();
+
+		//RCC->APB2ENR &= ~RCC_APB2ENR_USART1EN;
+		//battery.adc_pin.m_adc.m_rcc.disable();
+		//power.sleep_until_interrupt();
+
+		//prepare_for_sleep();
+		//power.sleep_until_interrupt();
+		//battery.configure();
+		//usart1.configure(8000000, 115200);
+		//usart1.sendln(battery.get_voltage(10));
 	}
+}
+
+IRQ_HANDLER(EXTI_4_TO_15)
+{
+	if (exti9)
+		exti9.reset();
+
+	if (exti10)
+		exti10.reset();
+
+
 }
