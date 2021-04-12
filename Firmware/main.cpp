@@ -32,10 +32,21 @@ constexpr struct
 
 void prepare_for_sleep()
 {
-	// achieves 0.04 mA
+	// achieves 0.046 mA
+
+	power.clock.disable();
+	spi1.disable();
+	USART1->CR1 &= ~(USART_CR1_RE | USART_CR1_TE);
+    USART1->CR1 &= ~USART_CR1_UE;
+	ADC1->CR |= ADC_CR_ADDIS;
+	adc1.m_rcc.disable();
+	modules_en.low();
+	RCC->APB2ENR &= ~RCC_APB2ENR_USART1EN;
+	spi1.m_rcc.disable();
+	power.clock.disable();
 
 	unused_pin.configure(gpio::mode::analog_input); // not connected
-	gpio::port_A.configure(allpins, gpio::mode::analog_input);
+	gpio::ports::A.configure(allpins, gpio::mode::analog_input); // TODO: don't configure PA13 & PA14 pins (SWDIO & SWCLK)
 
 	battery.gpio_pin.configure(gpio::mode::analog_input); // connected to resistor divider
 	modules_en.configure(gpio::mode::analog_input); // pulled to GND
@@ -48,16 +59,17 @@ void prepare_for_sleep()
 	spi1.m_miso.pin.configure(gpio::mode::input_pull_down);
 	spi1.m_mosi.pin.configure(gpio::mode::input_pull_down);
 	alternative_pins::usart1_tx.pin.configure(gpio::mode::input_pull_up);
+
+	gpio::ports::A.clock.disable();
+	gpio::ports::B.clock.disable();
 }
+
+int blinks = 0;
 
 int main(void)
 {
 	delay(3000000);
 
-	prepare_for_sleep();
-	power.stop(pwr::regulator_mode::low_power);
-	while (true);
-	
 	modules_en.configure(gpio::mode::output);
 	modules_en.high();
 	usart1.configure(8000000, 115200);
@@ -70,42 +82,54 @@ int main(void)
 	power.clock.enable();
 	power.sleep_after_interrupts(false);
 
-	modules_en.low();
-
 	battery.configure();
 
 	meter_in1.configure(gpio::mode::input_pull_up);
 	meter_in2.configure(gpio::mode::input_pull_up);
+
+	cc1101_class cc1101(spi1, cc1101_cs);
+	cc1101.configure();
+
+	usart1.send("cc verison: ");
+	usart1.sendln(cc1101.get_version());
+
+
+	delay(1000000);
+
+	usart1.send("going to sleep\r\n");
+	
+	cc1101.send_command(strobe_commands::SXOFF);
+
 	exti9.configure(interrupts::trigger::falling);
 	exti10.configure(interrupts::trigger::falling);
 	exti_4_to_15.enable();
 
 	while (true)
 	{
-		//usart1.configure(8000000, 115200);
-		//battery.configure();
-		usart1.sendln(battery.get_voltage(10));
-		power.stop();
-
-		//RCC->APB2ENR &= ~RCC_APB2ENR_USART1EN;
-		//battery.adc_pin.m_adc.m_rcc.disable();
-		//power.sleep_until_interrupt();
-
-		//prepare_for_sleep();
-		//power.sleep_until_interrupt();
-		//battery.configure();
-		//usart1.configure(8000000, 115200);
-		//usart1.sendln(battery.get_voltage(10));
+		led.configure(gpio::mode::output);
+		for (int i = 0; i < blinks; i++)
+		{
+			led.low();
+			delay_ticks(300000);
+			led.high();
+			delay_ticks(300000);
+		}
+		prepare_for_sleep();
+		power.stop(pwr::regulator_mode::low_power);
 	}
 }
 
 IRQ_HANDLER(EXTI_4_TO_15)
 {
 	if (exti9)
+	{
 		exti9.reset();
+		blinks = 1;
+	}
 
 	if (exti10)
+	{
 		exti10.reset();
-
-
+		blinks = 2;
+	}
 }
