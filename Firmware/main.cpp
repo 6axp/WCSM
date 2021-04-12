@@ -32,21 +32,31 @@ constexpr struct
 
 void prepare_for_sleep()
 {
-	unused_pin.configure(gpio::mode::input_pull_up); // not connected
-	gpio::port_A.configure(allpins, gpio::mode::input_pull_up);
+	// achieves 0.04 mA
 
-	battery.gpio_pin.configure(gpio::mode::floating_input); // connected to resistor divider
-	modules_en.configure(gpio::mode::floating_input); // pulled to GND
-	led.configure(gpio::mode::input_pull_up);
-	eeprom_cs.configure(gpio::mode::input_pull_up);
-	// cc1101_cs.configure(gpio::mode::floating_input); // not connected
-	// meter_in1.configure(gpio::mode::floating_input); // not connected
-	// meter_in2.configure(gpio::mode::floating_input); // not connected
+	unused_pin.configure(gpio::mode::analog_input); // not connected
+	gpio::port_A.configure(allpins, gpio::mode::analog_input);
+
+	battery.gpio_pin.configure(gpio::mode::analog_input); // connected to resistor divider
+	modules_en.configure(gpio::mode::analog_input); // pulled to GND
+
+	eeprom_cs.configure(gpio::mode::analog_input);
+	cc1101_cs.configure(gpio::mode::analog_input);
+	meter_in1.configure(gpio::mode::input_pull_up);
+	meter_in2.configure(gpio::mode::input_pull_up);
+
+	spi1.m_miso.pin.configure(gpio::mode::input_pull_down);
+	spi1.m_mosi.pin.configure(gpio::mode::input_pull_down);
+	alternative_pins::usart1_tx.pin.configure(gpio::mode::input_pull_up);
 }
 
 int main(void)
 {
-	delay(300000);
+	delay(3000000);
+
+	prepare_for_sleep();
+	power.stop(pwr::regulator_mode::low_power);
+	while (true);
 	
 	modules_en.configure(gpio::mode::output);
 	modules_en.high();
