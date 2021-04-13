@@ -93,12 +93,19 @@ int main(void)
 	usart1.send("cc verison: ");
 	usart1.sendln(cc1101.get_version());
 
+	cc1101.configure();
+	cc1101.set_cc_mode();
+	cc1101.set_modulation(modulation_mode::_2_FSK);
+	cc1101.set_frequency(frequency::_433);
+	cc1101.set_output_power(12);
+	cc1101.set_sync_mode(2);
+	cc1101.enable_crc();
 
-	delay(1000000);
+	//delay(1000000);
 
-	usart1.send("going to sleep\r\n");
+	//usart1.send("going to sleep\r\n");
 	
-	cc1101.send_command(strobe_commands::SXOFF);
+	//cc1101.send_command(strobe_commands::SXOFF);
 
 	exti9.configure(interrupts::trigger::falling);
 	exti10.configure(interrupts::trigger::falling);
@@ -106,6 +113,8 @@ int main(void)
 
 	while (true)
 	{
+		delay(1000000);
+		cc1101.send_data("ECHO!");
 		led.configure(gpio::mode::output);
 		for (int i = 0; i < blinks; i++)
 		{
@@ -114,8 +123,9 @@ int main(void)
 			led.high();
 			delay_ticks(300000);
 		}
-		prepare_for_sleep();
-		power.stop(pwr::regulator_mode::low_power);
+		blinks = 0;
+		//prepare_for_sleep();
+		//power.stop(pwr::regulator_mode::low_power);
 	}
 }
 
