@@ -51,7 +51,7 @@
         {
             "label": "Build & Flash",
             "type": "shell",
-            "command": "make -s -j 10 all&&D:/Projects/STM32/Utilities/st_link/ST-LINK_CLI.exe -c SWD -p Build/corelib_f030_test.bin 0x08000000 -v \"while_programming\" -rst",
+            "command": "make -s -j 10 all&&D:/Projects/STM32/Utilities/st_link/ST-LINK_CLI.exe -c SWD -p Build/wcsm_firmware.bin 0x08000000 -v \"while_programming\" -rst",
             "options": {
                 "cwd": "${workspaceRoot}",
                 "shell": {

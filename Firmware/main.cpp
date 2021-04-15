@@ -1,39 +1,11 @@
 #include "main.h"
 
-volatile void delay(unsigned ticks = 200000) { delay_ticks(ticks); }
+cc1101_class cc1101(spi1, cc1101_cs);
 
-auto& unused_pin = gpio::PB1;
-
-auto& modules_en = gpio::PA1;
-auto& led        = alternative_pins::usart1_tx.pin;
-auto& cc1101_cs  = gpio::PA3;
-auto& eeprom_cs  = gpio::PA4;
-auto& meter_in1  = gpio::PA9;
-auto& meter_in2  = gpio::PA10;
-
-struct wcsm_data
-{
-	constexpr static uint8_t header[] = { 11, 22, 33, 44, 55, 66, 77, 88 };
-	uint16_t adc_value = 0;
-	uint32_t cold = 0;
-	uint32_t hot = 0;
-	bool is_ok = false;
-	void serialize(uint8_t* data, size_t& length) const
-	{
-		for (size_t i = 0; i < sizeof(header); i++)
-			data[i] = header[i];
-
-		uint16_t* pAdc = reinterpret_cast<uint16_t*>(data + sizeof(header));
-		uint32_t* pCold = reinterpret_cast<uint32_t*>(pAdc + 1);
-		uint32_t* pHot = pCold + 1;
-
-		*pAdc = adc_value;
-		*pCold = cold;
-		*pHot = hot;
-
-		length = sizeof(header) + sizeof(adc_value) + sizeof(cold) + sizeof(hot);
-	}
-};
+uint32_t cold_counter = 100;
+uint32_t hot_counter = 200;
+bool counters_changed = false;
+int blinks = 0;
 
 constexpr struct
 {
@@ -57,14 +29,11 @@ constexpr struct
 	}
 } battery;
 
-void prepare_for_sleep()
+void go_to_sleep() // achieves 0.046 mA
 {
-	// achieves 0.046 mA
-
 	power.clock.disable();
 	spi1.disable();
-	USART1->CR1 &= ~(USART_CR1_RE | USART_CR1_TE);
-    USART1->CR1 &= ~USART_CR1_UE;
+	USART1->CR1 &= ~(USART_CR1_RE | USART_CR1_TE | USART_CR1_UE);
 	ADC1->CR |= ADC_CR_ADDIS;
 	adc1.m_rcc.disable();
 	modules_en.low();
@@ -72,16 +41,16 @@ void prepare_for_sleep()
 	spi1.m_rcc.disable();
 	power.clock.disable();
 
-	unused_pin.configure(gpio::mode::analog_input); // not connected
 	gpio::ports::A.configure(allpins, gpio::mode::analog_input); // TODO: don't configure PA13 & PA14 pins (SWDIO & SWCLK)
+	gpio::ports::B.configure(allpins, gpio::mode::analog_input);
 
 	battery.gpio_pin.configure(gpio::mode::analog_input); // connected to resistor divider
 	modules_en.configure(gpio::mode::analog_input); // pulled to GND
 
 	eeprom_cs.configure(gpio::mode::analog_input);
 	cc1101_cs.configure(gpio::mode::analog_input);
-	meter_in1.configure(gpio::mode::input_pull_up);
-	meter_in2.configure(gpio::mode::input_pull_up);
+	cold_pin.configure(gpio::mode::input_pull_up);
+	hot_pin.configure(gpio::mode::input_pull_up);
 
 	spi1.m_miso.pin.configure(gpio::mode::input_pull_down);
 	spi1.m_mosi.pin.configure(gpio::mode::input_pull_down);
@@ -89,40 +58,26 @@ void prepare_for_sleep()
 
 	gpio::ports::A.clock.disable();
 	gpio::ports::B.clock.disable();
+
+	power.stop(pwr::regulator_mode::low_power);
 }
 
-int blinks = 0;
-
-uint16_t cold_counter = 100;
-uint16_t hot_counter = 200;
-
-int main(void)
+void configure()
 {
-	delay(3000000);
-
 	modules_en.configure(gpio::mode::output);
 	modules_en.high();
-	usart1.configure(8000000, 115200);
 
-	at250x0b eeprom(spi1, eeprom_cs, true, true);
+	usart1.configure(ahb_clock, 115200);
 	usart1.send("-------");
 	usart1.println();
-	eeprom.print_to(usart1);
 
-	power.clock.enable();
-	power.sleep_after_interrupts(false);
+	at250x0b eeprom(spi1, eeprom_cs, true, true);
+	eeprom.print_to(usart1);
 
 	battery.configure();
 
-	meter_in1.configure(gpio::mode::input_pull_up);
-	meter_in2.configure(gpio::mode::input_pull_up);
-
-	cc1101_class cc1101(spi1, cc1101_cs);
-	cc1101.configure();
-
-	usart1.send("cc verison: ");
-	usart1.sendln(cc1101.get_version());
-
+	cc1101_cs.configure(gpio::mode::output);
+    cc1101_cs.high();
 	cc1101.configure();
 	cc1101.set_cc_mode();
 	cc1101.set_modulation(modulation_mode::_2_FSK);
@@ -131,55 +86,92 @@ int main(void)
 	cc1101.set_sync_mode(2);
 	cc1101.enable_crc();
 
-	//delay(1000000);
+	usart1.send("cc verison: ");
+	usart1.sendln(cc1101.get_version());
 
-	//usart1.send("going to sleep\r\n");
-	
-	//cc1101.send_command(strobe_commands::SXOFF);
+	led.configure(gpio::mode::output);
+	led.high();
 
-	exti9.configure(interrupts::trigger::falling);
-	exti10.configure(interrupts::trigger::falling);
-	exti_4_to_15.enable();
+	power.clock.enable();
+	power.sleep_after_interrupts(false);
+	cold_pin.configure(gpio::mode::input_pull_up);
+	hot_pin.configure(gpio::mode::input_pull_up);
+	hot_interrupt.configure(interrupts::trigger::falling);
+	cold_interrupt.configure(interrupts::trigger::falling);
+	counters_interrupt_handler.enable();
+}
 
-	while (true)
+void get_counters_from_eeprom(uint32_t& cold, uint32_t& hot)
+{
+	// TODO: implement function
+}
+
+void save_counters_to_eeprom(uint32_t cold, uint32_t hot)
+{
+	// TODO: implement function
+}
+
+void send_data(uint16_t adc, uint32_t cold, uint32_t hot)
+{
+	uint8_t to_send[256];
+	size_t to_send_len = 0;
+
+	wcsm { adc, cold, hot }.serialize(to_send, to_send_len);
+
+	cc1101.send_data(to_send, to_send_len);
+}
+
+void blink(size_t count)
+{
+	for (size_t i = 0; i < count; i++)
 	{
-		delay(1000000);
-		uint8_t to_send[256];
-		size_t to_send_len = 0;
-		wcsm_data {
-			battery.get_adc(10),
-			cold_counter,
-			hot_counter
-		}.serialize(to_send, to_send_len);
-
-		cc1101.send_data(to_send, to_send_len);
-		led.configure(gpio::mode::output);
-		for (int i = 0; i < blinks; i++)
-		{
-			led.low();
-			delay_ticks(300000);
-			led.high();
-			delay_ticks(300000);
-		}
-		blinks = 0;
-		//prepare_for_sleep();
-		//power.stop(pwr::regulator_mode::low_power);
+		led.low();
+		delay_ticks(300000);
+		led.high();
+		delay_ticks(300000);
 	}
 }
 
-IRQ_HANDLER(EXTI_4_TO_15)
+int main(void)
 {
-	if (exti9)
+	configure();
+	get_counters_from_eeprom(cold_counter, hot_counter);
+	send_data(battery.get_adc(), cold_counter, hot_counter);
+	blink(1);
+
+	while (true)
 	{
-		exti9.reset();
+		if (counters_changed)
+		{
+			save_counters_to_eeprom(cold_counter, hot_counter);
+			send_data(battery.get_adc(), cold_counter, hot_counter);
+			counters_changed = false;
+		}
+		if (blinks)
+		{
+			blink(blinks);
+			blinks = 0;
+		}
+
+		// go_to_sleep();
+	}
+}
+
+IRQ_HANDLER(COUNTERS_INTERRUPT)
+{
+	counters_changed = true;
+
+	if (hot_interrupt)
+	{
 		blinks = 1;
 		hot_counter++;
+		hot_interrupt.reset();
 	}
 
-	if (exti10)
+	if (cold_interrupt)
 	{
-		exti10.reset();
 		blinks = 2;
 		cold_counter++;
+		cold_interrupt.reset();
 	}
 }
