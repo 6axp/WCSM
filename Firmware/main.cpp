@@ -11,6 +11,30 @@ auto& eeprom_cs  = gpio::PA4;
 auto& meter_in1  = gpio::PA9;
 auto& meter_in2  = gpio::PA10;
 
+struct wcsm_data
+{
+	constexpr static uint8_t header[] = { 11, 22, 33, 44, 55, 66, 77, 88 };
+	uint16_t adc_value = 0;
+	uint32_t cold = 0;
+	uint32_t hot = 0;
+	bool is_ok = false;
+	void serialize(uint8_t* data, size_t& length) const
+	{
+		for (size_t i = 0; i < sizeof(header); i++)
+			data[i] = header[i];
+
+		uint16_t* pAdc = reinterpret_cast<uint16_t*>(data + sizeof(header));
+		uint32_t* pCold = reinterpret_cast<uint32_t*>(pAdc + 1);
+		uint32_t* pHot = pCold + 1;
+
+		*pAdc = adc_value;
+		*pCold = cold;
+		*pHot = hot;
+
+		length = sizeof(header) + sizeof(adc_value) + sizeof(cold) + sizeof(hot);
+	}
+};
+
 constexpr struct
 {
 	const float vref = 3.0f;
@@ -19,14 +43,17 @@ constexpr struct
 	const adc::pin& adc_pin = adc::PA0;
 	const uint16_t upper_bound = (1 << 12) - 1;
 	void configure() const { adc_pin.m_adc.configure(); }
-	float get_voltage(uint32_t measures = 1) const
+	uint16_t get_adc(size_t measures = 1) const
 	{
 		adc_pin.m_adc.select_channel(adc_pin.m_channel);
-		uint16_t sum = 0;
-		for (uint16_t i = 0; i < measures; i++)
+		uint32_t sum = 0;
+		for (size_t i = 0; i < measures; i++)
 			sum += adc_pin.m_adc.measure();
-
-		return (sum / measures) * divider_ratio * vref / upper_bound;
+		return static_cast<uint16_t>(sum / measures);
+	}
+	float get_voltage(size_t measures = 1) const
+	{
+		return get_adc(measures) * divider_ratio * vref / upper_bound;
 	}
 } battery;
 
@@ -65,6 +92,9 @@ void prepare_for_sleep()
 }
 
 int blinks = 0;
+
+uint16_t cold_counter = 100;
+uint16_t hot_counter = 200;
 
 int main(void)
 {
@@ -114,7 +144,15 @@ int main(void)
 	while (true)
 	{
 		delay(1000000);
-		cc1101.send_data("ECHO!");
+		uint8_t to_send[256];
+		size_t to_send_len = 0;
+		wcsm_data {
+			battery.get_adc(10),
+			cold_counter,
+			hot_counter
+		}.serialize(to_send, to_send_len);
+
+		cc1101.send_data(to_send, to_send_len);
 		led.configure(gpio::mode::output);
 		for (int i = 0; i < blinks; i++)
 		{
@@ -135,11 +173,13 @@ IRQ_HANDLER(EXTI_4_TO_15)
 	{
 		exti9.reset();
 		blinks = 1;
+		hot_counter++;
 	}
 
 	if (exti10)
 	{
 		exti10.reset();
 		blinks = 2;
+		cold_counter++;
 	}
 }
