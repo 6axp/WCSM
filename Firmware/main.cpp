@@ -77,7 +77,10 @@ void configure()
 	battery.configure();
 
 	cc1101_cs.configure(gpio::mode::output);
-    cc1101_cs.high();
+	cc1101_cs.high();
+
+	delay_ticks(100000); // let cc1101 initialize after power up
+
 	cc1101.configure();
 	cc1101.set_cc_mode();
 	cc1101.set_modulation(modulation_mode::_2_FSK);
