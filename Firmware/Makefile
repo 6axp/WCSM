@@ -74,6 +74,8 @@ C_INCLUDES = \
 -I$(STM32_PATH)/Libraries \
 -I$(STM32_PATH)/Libraries/CMSIS/Device/ST/$(DEVICE_FAMILY)/Include \
 -I$(STM32_PATH)/Libraries/CMSIS/Include \
+-I$(STM32_PATH)/Libraries/Corelib \
+-I$(STM32_PATH)/Libraries/Corelib/chips \
 -I. \
 
 # compile gcc flags

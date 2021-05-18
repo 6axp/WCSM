@@ -10,11 +10,11 @@
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",
-            "executable": "${workspaceRoot}\\Build\\corelib_f030_test.elf",
-            "svdFile": "D:\\Projects\\STM32\\Utilities\\cmsis_svd\\cmsis-svd-master\\data\\STMicro\\STM32F030.svd",
+            "executable": "${workspaceRoot}\\Build\\wcsm_firmware.elf",
+            "svdFile": "${env:STM32}\\Utilities\\cmsis_svd\\cmsis-svd-master\\data\\STMicro\\STM32F030.svd",
             "configFiles": [
-                "D:\\Projects\\STM32\\Utilities\\open_ocd\\scripts\\interface\\stlink-v2-1.cfg",
-                "D:\\Projects\\STM32\\Utilities\\open_ocd\\scripts\\target\\stm32f0x.cfg"
+                "${env:STM32}\\Utilities\\open_ocd\\scripts\\interface\\stlink-v2-1.cfg",
+                "${env:STM32}\\Utilities\\open_ocd\\scripts\\target\\stm32f0x.cfg"
             ]
         },
         {
@@ -25,11 +25,11 @@
             "type": "cortex-debug",
             //"swoConfig" : { "enabled": true },
             "servertype": "openocd",
-            "executable": "${workspaceRoot}\\Build\\corelib_f030_test.elf",
-            "svdFile": "D:\\Projects\\STM32\\Utilities\\cmsis_svd\\cmsis-svd-master\\data\\STMicro\\STM32F030.svd",
+            "executable": "${workspaceRoot}\\Build\\wcsm_firmware.elf",
+            "svdFile": "${env:STM32}\\Utilities\\cmsis_svd\\cmsis-svd-master\\data\\STMicro\\STM32F030.svd",
             "configFiles": [
-                "D:\\Projects\\STM32\\Utilities\\open_ocd\\scripts\\interface\\stlink-v2-1.cfg",
-                "D:\\Projects\\STM32\\Utilities\\open_ocd\\scripts\\target\\stm32f0x.cfg"
+                "${env:STM32}\\Utilities\\open_ocd\\scripts\\interface\\stlink-v2-1.cfg",
+                "${env:STM32}\\Utilities\\open_ocd\\scripts\\target\\stm32f0x.cfg"
             ]
         }
     ]

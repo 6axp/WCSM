@@ -1,8 +1,8 @@
 #pragma once
 
-#include "D:/Projects/STM32/Libraries/CoreLib/chips/stm32f030f4p6.h"
-#include "D:/Projects/STM32/Libraries/Corelib/at250x0b.h"
-#include "D:/Projects/STM32/Libraries/Corelib/cc1101.h"
+#include "stm32f030f4p6.h"
+#include "at250x0b.h"
+#include "cc1101.h"
 
 constexpr uint32_t ahb_clock = 8000000;
 

@@ -11,7 +11,7 @@
         {
             "label": "Start Terminal",
             "type": "shell",
-            "command": "D:/Projects/STM32/Utilities/uart_terminal/Terminal.exe",
+            "command": "${env:STM32}/Utilities/uart_terminal/Terminal.exe",
             "group": "test",
             "problemMatcher": []
         },
@@ -20,7 +20,7 @@
             "type": "shell",
             "command": "KillTerminal.bat",
             "options": {
-                "cwd": "D:/Projects/STM32/Utilities/uart_terminal",
+                "cwd": "${env:STM32}/Utilities/uart_terminal",
                 "shell": {
                     "executable": "cmd.exe",
                     "args": [
@@ -51,7 +51,7 @@
         {
             "label": "Build & Flash",
             "type": "shell",
-            "command": "make -s -j 10 all&&D:/Projects/STM32/Utilities/st_link/ST-LINK_CLI.exe -c SWD -p Build/wcsm_firmware.bin 0x08000000 -v \"while_programming\" -rst",
+            "command": "make -s -j 10 all&&${env:STM32}/Utilities/st_link/ST-LINK_CLI.exe -c SWD -p Build/wcsm_firmware.bin 0x08000000 -v \"while_programming\" -rst",
             "options": {
                 "cwd": "${workspaceRoot}",
                 "shell": {

@@ -1,6 +1,6 @@
 {
-    "cortex-debug.armToolchainPath": "D:\\Projects\\STM32\\Utilities\\arm_gcc\\bin",
-    "cortex-debug.openocdPath": "D:\\Projects\\STM32\\Utilities\\open_ocd\\bin\\openocd.exe",
+    "cortex-debug.armToolchainPath": "${env:STM32}\\Utilities\\arm_gcc\\bin",
+    "cortex-debug.openocdPath": "${env:STM32}\\Utilities\\open_ocd\\bin\\openocd.exe",
 
     "files.associations": {
         "cstdint": "cpp",
