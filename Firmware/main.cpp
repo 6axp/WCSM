@@ -68,11 +68,10 @@ void configure()
 	modules_en.high();
 
 	usart1.configure(ahb_clock, 115200);
-	usart1.send("-------");
-	usart1.println();
+	usart1.println("-------");
 
-	at250x0b eeprom(spi1, eeprom_cs, true, true);
-	eeprom.print_to(usart1);
+	at250x0b eeprom(spi1, eeprom_cs);
+	eeprom.configure();
 
 	battery.configure();
 
@@ -89,8 +88,8 @@ void configure()
 	cc1101.set_sync_mode(2);
 	cc1101.enable_crc();
 
-	usart1.send("cc verison: ");
-	usart1.sendln(cc1101.get_version());
+	usart1.print("cc verison: ");
+	usart1.println(cc1101.get_version());
 
 	led.configure(gpio::mode::output);
 	led.high();
