@@ -1,4 +1,6 @@
 
+MAKEFLAGS += --silent
+
 # Define STM32 environment variable or define STM32_PATH manually
 STM32_PATH = $(subst \,/,${STM32})
 
@@ -18,6 +20,7 @@ FPU = # No FPU
 SYSTEM = system_stm32f0xx.c
 STARTUP = startup_stm32f030x6.s
 LINKER = STM32F030F4Px_FLASH.ld
+FIRM_ADDR = 0x08000000
 
 ######################################
 # source
@@ -102,7 +105,7 @@ LIBDIR =
 LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections -specs=nosys.specs -Wl,--print-memory-usage 
 
 # default action: build all
-all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
+build: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
 
 #######################################
 # build the application
@@ -140,7 +143,12 @@ $(BUILD_DIR):
 #######################################
 clean:
 	-rm -fR $(BUILD_DIR)
-  
+
+flash:
+	st-flash --connect-under-reset write $(BUILD_DIR)/$(TARGET).bin $(FIRM_ADDR)
+
+all: build flash
+
 #######################################
 # dependencies
 #######################################

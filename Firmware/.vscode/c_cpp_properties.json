@@ -2,7 +2,7 @@
     "configurations": [
         {
             "name": "arm_c_cpp_properties",
-            "compilerPath": "${env:STM32}/Utilities/arm_gcc/bin/arm-none-eabi-gcc.exe",
+            "compilerPath": "${env:STM32}/Utilities/arm_gcc/bin/arm-none-eabi-g++",
             "includePath": [
                 "${env:STM32}/Utilities/arm_gcc/arm-none-eabi/include",
                 "${env:STM32}/Utilities/arm_gcc/arm-none-eabi/include/sys/",
