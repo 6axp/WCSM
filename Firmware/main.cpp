@@ -110,17 +110,15 @@ void configure()
 
 void get_counters_from_eeprom(uint32_t& cold, uint32_t& hot)
 {
-	uint8_t data[sizeof(cold) + sizeof(hot)];
+	uint32_t data[2];
 	eeprom.read(counter_address, data);
-	cold = *(reinterpret_cast<uint32_t*>(&data[0]));
-	hot  = *(reinterpret_cast<uint32_t*>(&data[sizeof(cold)]));
+	cold = data[0];
+	hot  = data[1];
 }
 
 void save_counters_to_eeprom(uint32_t cold, uint32_t hot)
 {
-	uint8_t data[sizeof(cold) + sizeof(hot)];
-	*(reinterpret_cast<uint32_t*>(&data[0])) = cold;
-	*(reinterpret_cast<uint32_t*>(&data[sizeof(cold)])) = hot;
+	uint32_t data[2] = { cold, hot };
 	eeprom.write(counter_address, data);
 }
 

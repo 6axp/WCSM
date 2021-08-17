@@ -6,7 +6,7 @@
 #include "wcsm.h"
 #include "converting.h"
 
-constexpr auto using_version = corelib::version { 0, 1, corelib::version::dev_status::alpha, 5 };
+constexpr auto using_version = corelib::version { 0, 1, corelib::version::dev_status::alpha, 6 };
 static_assert(corelib::current_version == using_version, "version of attached library mismatches the desired version of the library.");
 
 constexpr uint32_t ahb_clock = 8000000;
