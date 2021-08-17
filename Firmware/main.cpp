@@ -1,6 +1,10 @@
 #include "main.h"
 
 cc1101_class cc1101(spi1, cc1101_cs);
+at250x0b eeprom(spi1, eeprom_cs);
+
+uint16_t counter_address = 0x00;
+long usart_baud = 115200;
 
 uint32_t cold_counter = 100;
 uint32_t hot_counter = 200;
@@ -67,18 +71,19 @@ void configure()
 	modules_en.configure(gpio::mode::output);
 	modules_en.high();
 
-	usart1.configure(ahb_clock, 115200);
+	usart1.configure(ahb_clock, usart_baud);
 	usart1.println("-------");
-
-	at250x0b eeprom(spi1, eeprom_cs);
-	eeprom.configure();
 
 	battery.configure();
 
 	cc1101_cs.configure(gpio::mode::output);
+	eeprom_cs.configure(gpio::mode::output);
 	cc1101_cs.high();
+	eeprom_cs.high();
 
 	delay_ticks(100000); // let cc1101 initialize after power up
+
+	eeprom.configure(false);
 
 	cc1101.configure();
 	cc1101.set_cc_mode();
@@ -105,22 +110,32 @@ void configure()
 
 void get_counters_from_eeprom(uint32_t& cold, uint32_t& hot)
 {
-	// TODO: implement function
+	uint8_t data[sizeof(cold) + sizeof(hot)];
+	eeprom.read(counter_address, data);
+	cold = *(reinterpret_cast<uint32_t*>(&data[0]));
+	hot  = *(reinterpret_cast<uint32_t*>(&data[sizeof(cold)]));
 }
 
 void save_counters_to_eeprom(uint32_t cold, uint32_t hot)
 {
-	// TODO: implement function
+	uint8_t data[sizeof(cold) + sizeof(hot)];
+	*(reinterpret_cast<uint32_t*>(&data[0])) = cold;
+	*(reinterpret_cast<uint32_t*>(&data[sizeof(cold)])) = hot;
+	eeprom.write(counter_address, data);
 }
 
-void send_data(uint16_t adc, uint32_t cold, uint32_t hot)
+void send_data(uint32_t adc, uint32_t cold, uint32_t hot)
 {
 	uint8_t to_send[256];
 	size_t to_send_len = 0;
-
 	wcsm { adc, cold, hot }.serialize(to_send, to_send_len);
-
 	cc1101.send_data(to_send, to_send_len);
+
+	usart1.configure(ahb_clock, usart_baud);
+	usart1.print("cold: ");
+	usart1.println((int)cold);
+	usart1.print("hot: ");
+	usart1.println((int)hot);
 }
 
 void blink(size_t count)
@@ -151,6 +166,7 @@ int main(void)
 		}
 		if (blinks)
 		{
+			led.configure(gpio::mode::output);
 			blink(blinks);
 			blinks = 0;
 		}

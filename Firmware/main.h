@@ -4,6 +4,7 @@
 #include "at250x0b.h"
 #include "cc1101.h"
 #include "wcsm.h"
+#include "converting.h"
 
 constexpr auto using_version = corelib::version { 0, 1, corelib::version::dev_status::alpha, 5 };
 static_assert(corelib::current_version == using_version, "version of attached library mismatches the desired version of the library.");
