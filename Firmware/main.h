@@ -1,6 +1,6 @@
 #pragma once
 
-#include "stm32f030f4p6.h"
+#include _TARGET_CHIP_FILE_H_
 #include "at250x0b.h"
 #include "cc1101.h"
 #include "wcsm.h"

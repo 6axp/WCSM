@@ -28,7 +28,8 @@
                 "__force_stores()",
                 "__wfi()",
                 "__wfe()",
-                "__sev()"
+                "__sev()",
+                "_TARGET_CHIP_FILE_H_ = \"stm32f030f4p6.h\""
             ],
             "cStandard": "c11",
             "cppStandard": "c++17",
