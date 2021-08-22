@@ -1,5 +1,7 @@
 #include "main.h"
 
+constexpr rcc::clocks clocks = rcc::default_clocks;
+
 cc1101_class cc1101(spi1, cc1101_cs);
 at250x0b eeprom(spi1, eeprom_cs);
 
@@ -37,11 +39,11 @@ void go_to_sleep() // achieves 0.046 mA
 {
 	power.clock.disable();
 	spi1.disable();
-	USART1->CR1 &= ~(USART_CR1_RE | USART_CR1_TE | USART_CR1_UE);
-	ADC1->CR |= ADC_CR_ADDIS;
-	adc1.m_rcc.disable();
+	usart1.disable();
+	adc1.disable();
+	adc1.clock.disable();
 	modules_en.low();
-	RCC->APB2ENR &= ~RCC_APB2ENR_USART1EN;
+	usart1.clock.disable();
 	spi1.m_rcc.disable();
 	power.clock.disable();
 
@@ -71,7 +73,7 @@ void configure()
 	modules_en.configure(gpio::mode::output);
 	modules_en.high();
 
-	usart1.configure(ahb_clock, usart_baud);
+	usart1.configure(clocks, usart_baud);
 	usart1.println("-------");
 
 	battery.configure();
@@ -129,7 +131,7 @@ void send_data(uint32_t adc, uint32_t cold, uint32_t hot)
 	wcsm { adc, cold, hot }.serialize(to_send, to_send_len);
 	cc1101.send_data(to_send, to_send_len);
 
-	usart1.configure(ahb_clock, usart_baud);
+	usart1.configure(clocks, usart_baud);
 	usart1.print("cold: ");
 	usart1.println((int)cold);
 	usart1.print("hot: ");

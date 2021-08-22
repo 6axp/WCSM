@@ -6,10 +6,8 @@
 #include "wcsm.h"
 #include "converting.h"
 
-constexpr auto using_version = corelib::version { 0, 1, corelib::version::dev_status::alpha, 6 };
+constexpr auto using_version = corelib::version { 0, 1, corelib::version::dev_status::alpha, 9 };
 static_assert(corelib::current_version == using_version, "version of attached library mismatches the desired version of the library.");
-
-constexpr uint32_t ahb_clock = 8000000;
 
 auto& modules_en = gpio::PA1;
 auto& led        = alternative_pins::usart1_tx.pin;
